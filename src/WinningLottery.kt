@@ -11,7 +11,11 @@ class WinningLottery {
 
     private fun getBonusNumber(): LotteryNumber {
         println("보너스 볼을 입력해주세요.")
-        return LotteryNumber(num = readLine()!!.toInt())
+        val bonus = LotteryNumber(num = readLine()!!.toInt())
+        if (numbers.contains(bonus)) {
+            throw IllegalArgumentException()
+        }
+        return bonus
     }
 
     private fun getLotteryNumbers(): Set<LotteryNumber> {
@@ -27,7 +31,7 @@ class WinningLottery {
         return numbers
     }
 
-     fun match(lotteries: ArrayList<Lottery>) {
+     fun match(lotteries: ArrayList<Lottery>, count: Int) {
         val matchResult: HashMap<Int, Int> = HashMap()
         lotteries.asSequence().forEach { lottery ->
             val idx = this.match(lottery)
@@ -39,11 +43,21 @@ class WinningLottery {
             println(String.format("%d개 일치(%d원)- %d개", idx, matchPrice[idx], matchResult.getOrDefault(idx, 0)))
         println(String.format("5개 일치, 보너스 볼 일치(%d원)- %d개", matchPrice[BONUS], matchResult.getOrDefault(BONUS, 0)))
         println(String.format("%d개 일치(%d원)- %d개", 6, matchPrice[6], matchResult.getOrDefault(6, 0)))
+
+         val winningRate: Float = computeWinningRate(matchResult, count)
+         println(String.format("총 수익률은 %f입니다.", winningRate))
     }
 
     private fun match(other: Lottery) :Int {
         var count = numbers.intersect(other.numbers).size
         if ( count == 5 && other.numbers.contains(bonus)) count = 7
         return count
+    }
+
+    private fun computeWinningRate(matchResult: HashMap<Int, Int>, count: Int) : Float{
+        var total = 0
+        for(idx in 3..7)
+            total += matchResult.getOrDefault(idx, 0) * matchPrice.getOrDefault(idx, 0)
+        return total.toFloat() / ( count * 1000)
     }
 }

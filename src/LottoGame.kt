@@ -8,7 +8,7 @@ class LottoGame {
         println("%d개를 구매했습니다.".format(count))
         for (x in 0 until count) lotteries.add(Lottery())
         val winning = WinningLottery()
-        winning.match(lotteries)
+        winning.match(lotteries, count)
     }
 
     private fun getPurchaseAmount() : Int {
